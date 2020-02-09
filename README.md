@@ -1,4 +1,4 @@
-# @nwtgck/ssh-keygen
+# web-ssh-keygen
 [![CircleCI](https://circleci.com/gh/nwtgck/ssh-keygen-npm.svg?style=shield)](https://circleci.com/gh/nwtgck/ssh-keygen-npm)
 
 Generate a key-pair of `ssh-keygen` on Web
