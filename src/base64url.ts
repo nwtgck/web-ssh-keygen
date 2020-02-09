@@ -1,6 +1,6 @@
 // adapted from https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-08#appendix-C
 
-function base64urlEncode(arg) {
+export function base64urlEncode(arg: string): string {
   const step1 = window.btoa(arg); // Regular base64 encoder
   const step2 = step1.split("=")[0]; // Remove any trailing '='s
   const step3 = step2.replace(/\+/g, "-"); // 62nd char of encoding
@@ -8,7 +8,7 @@ function base64urlEncode(arg) {
   return step4;
 }
 
-function base64urlDecode(s) {
+export function base64urlDecode(s: string): string {
   const step1 = s.replace(/-/g, "+"); // 62nd char of encoding
   const step2 = step1.replace(/_/g, "/"); // 63rd char of encoding
   let step3 = step2;
@@ -26,6 +26,3 @@ function base64urlDecode(s) {
   }
   return window.atob(step3); // Regular base64 decoder
 }
-
-const module = window.module || {};
-module.exports = { base64urlDecode, base64urlEncode };
