@@ -7,7 +7,7 @@ function arrayToString(a: any[]) {
   return String.fromCharCode.apply(null, a);
 }
 
-function stringToArray(s: string) {
+export function stringToArray(s: string) {
   // TODO: any
   return s.split("").map(c => (c as any).charCodeAt());
 }
@@ -27,7 +27,7 @@ function arrayToPem(a: any) {
 }
 
 // TODO: any
-function arrayToLen(a: any[]) {
+export function arrayToLen(a: any[]) {
   let result = 0;
   for (let i = 0; i < a.length; i += 1) {
     result = result * 256 + a[i];
@@ -35,7 +35,7 @@ function arrayToLen(a: any[]) {
   return result;
 }
 
-function integerToOctet(n: number) {
+export function integerToOctet(n: number) {
   const result = [];
   for (let i = n; i > 0; i >>= 8) {
     result.push(i & 0xff);
@@ -43,7 +43,7 @@ function integerToOctet(n: number) {
   return result.reverse();
 }
 
-function lenToArray(n: number) {
+export function lenToArray(n: number) {
   const oct = integerToOctet(n);
   let i;
   for (i = oct.length; i < 4; i += 1) {
@@ -72,7 +72,7 @@ export function decodePublicKey(s: string) {
 }
 
 // TODO: any
-function checkHighestBit(v: any[]) {
+export function checkHighestBit(v: any[]) {
   if (v[0] >> 7 === 1) {
     // add leading zero if first bit is set
     v.unshift(0);
@@ -104,7 +104,7 @@ export function encodePublicKey(jwk: any, name: string) {
   return `${k.type} ${encoding} ${k.name}`;
 }
 
-function asnEncodeLen(n: number) {
+export function asnEncodeLen(n: number) {
   let result = [];
   if (n >> 7) {
     result = integerToOctet(n);
