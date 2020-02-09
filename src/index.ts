@@ -26,29 +26,33 @@ export function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return window.btoa(binary);
 }
 
-// TODO: any in return type
-export function generateKeyPair(alg: string, size: number, name: string): any {
-  return window.crypto.subtle
+export async function generateKeyPair(
+  {alg, size, name, hash}:
+  {alg: "RSASSA-PKCS1-v1_5", size: 1024 | 2048 | 4096, hash: "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512", name: string}): Promise<{privateKey: string, publicKey: string}> {
+  const key = await window.crypto.subtle
     .generateKey(
       {
-        name: "RSASSA-PKCS1-v1_5",
-        modulusLength: 2048, // can be 1024, 2048, or 4096
+        name: alg,
+        modulusLength: size,
         publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-        hash: { name: "SHA-1" }, // can be "SHA-1", "SHA-256", "SHA-384", or "SHA-512"
+        hash: { name: hash },
       },
       extractable,
       ["sign", "verify"]
-    )
-    .then(key => {
-      const privateKey = window.crypto.subtle
-        .exportKey("jwk", key.privateKey)
-        .then(encodePrivateKey)
-        // TODO: any
-        .then((wrap as any))
-        // TODO: any
-        .then((rsaPrivateKey as any));
+    );
 
-      const publicKey = window.crypto.subtle.exportKey("jwk", key.publicKey).then(jwk => encodePublicKey(jwk, name));
-      return Promise.all([privateKey, publicKey]);
-    });
+    const privateKeyPromise = window.crypto.subtle
+      .exportKey("jwk", key.privateKey)
+      .then(encodePrivateKey)
+      // TODO: any
+      .then((wrap as any))
+      // TODO: any
+      .then((rsaPrivateKey as any));
+
+    const publicKeyPromise = window.crypto.subtle.exportKey("jwk", key.publicKey).then(jwk => encodePublicKey(jwk, name));
+    const [privateKey, publicKey] = await Promise.all([privateKeyPromise, publicKeyPromise] as const);
+    return {
+      privateKey,
+      publicKey
+    };
 }
