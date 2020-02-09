@@ -1,6 +1,6 @@
 {
   "name": "@nwtgck/ssh-keygen",
-  "version": "0.1.0-SNAPSHOT",
+  "version": "0.1.0",
   "description": "Generate ssh-keygen keys using the WebCrypto API",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
