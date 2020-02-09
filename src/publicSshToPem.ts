@@ -60,7 +60,7 @@ function arrayToPem(a: any[]) {
 }
 
 // TODO: any
-function arrayToString(a: any) {
+export function arrayToString(a: any) {
   return String.fromCharCode.apply(null, a);
 }
 

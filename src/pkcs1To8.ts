@@ -22,7 +22,7 @@ function stripPemFormatting(str: string) {
     .replace(/[\n\r]/g, "");
 }
 // TODO: any
-function arrayToPem(a: any[]) {
+export function arrayToPem(a: any[]) {
   return window.btoa(a.map(c => String.fromCharCode(c)).join(""));
 }
 
@@ -31,7 +31,7 @@ function stringToArray(s: string) {
   return s.split("").map(c => (c as any).charCodeAt());
 }
 
-function pemToArray(pem: string) {
+export function pemToArray(pem: string) {
   return stringToArray(window.atob(pem));
 }
 

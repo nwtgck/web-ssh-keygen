@@ -26,4 +26,3 @@ export function base64urlDecode(s: string): string {
   }
   return window.atob(step3); // Regular base64 decoder
 }
-
