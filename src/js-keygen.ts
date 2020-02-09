@@ -1,7 +1,8 @@
 /* global encodePrivateKey, encodePublicKey */
+import {encodePrivateKey, encodePublicKey} from './ssh-util';
 const extractable = true;
 
-function wrap(text, len) {
+function wrap(text: string, len: number): string {
   const length = len || 72;
   let result = "";
   for (let i = 0; i < text.length; i += length) {
@@ -11,11 +12,11 @@ function wrap(text, len) {
   return result;
 }
 
-function rsaPrivateKey(key) {
+function rsaPrivateKey(key: string): string {
   return `-----BEGIN RSA PRIVATE KEY-----\n${key}-----END RSA PRIVATE KEY-----`;
 }
 
-function arrayBufferToBase64(buffer) {
+export function arrayBufferToBase64(buffer: ArrayBuffer): string {
   let binary = "";
   const bytes = new Uint8Array(buffer);
   const len = bytes.byteLength;
@@ -25,7 +26,8 @@ function arrayBufferToBase64(buffer) {
   return window.btoa(binary);
 }
 
-function generateKeyPair(alg, size, name) {
+// TODO: any in return type
+export function generateKeyPair(alg: string, size: number, name: string): any {
   return window.crypto.subtle
     .generateKey(
       {
@@ -41,12 +43,12 @@ function generateKeyPair(alg, size, name) {
       const privateKey = window.crypto.subtle
         .exportKey("jwk", key.privateKey)
         .then(encodePrivateKey)
-        .then(wrap)
-        .then(rsaPrivateKey);
+        // TODO: any
+        .then((wrap as any))
+        // TODO: any
+        .then((rsaPrivateKey as any));
 
       const publicKey = window.crypto.subtle.exportKey("jwk", key.publicKey).then(jwk => encodePublicKey(jwk, name));
       return Promise.all([privateKey, publicKey]);
     });
 }
-
-module.exports = { arrayBufferToBase64, generateKeyPair };

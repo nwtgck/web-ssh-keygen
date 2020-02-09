@@ -1,27 +1,33 @@
 /* eslint no-bitwise: 0 */
 /* global base64urlDecode */
+import {base64urlDecode} from './base64url';
 
-function arrayToString(a) {
+// TODO: any
+function arrayToString(a: any[]) {
   return String.fromCharCode.apply(null, a);
 }
 
-function stringToArray(s) {
-  return s.split("").map(c => c.charCodeAt());
+function stringToArray(s: string) {
+  // TODO: any
+  return s.split("").map(c => (c as any).charCodeAt());
 }
 
-function base64urlToArray(s) {
+export function base64urlToArray(s: string) {
   return stringToArray(base64urlDecode(s));
 }
 
-function pemToArray(pem) {
+function pemToArray(pem: string) {
   return stringToArray(window.atob(pem));
 }
 
-function arrayToPem(a) {
-  return window.btoa(a.map(c => String.fromCharCode(c)).join(""));
+// TODO: any
+function arrayToPem(a: any) {
+  // TODO: any
+  return window.btoa(a.map((c: any) => String.fromCharCode(c)).join(""));
 }
 
-function arrayToLen(a) {
+// TODO: any
+function arrayToLen(a: any[]) {
   let result = 0;
   for (let i = 0; i < a.length; i += 1) {
     result = result * 256 + a[i];
@@ -29,7 +35,7 @@ function arrayToLen(a) {
   return result;
 }
 
-function integerToOctet(n) {
+function integerToOctet(n: number) {
   const result = [];
   for (let i = n; i > 0; i >>= 8) {
     result.push(i & 0xff);
@@ -37,7 +43,7 @@ function integerToOctet(n) {
   return result.reverse();
 }
 
-function lenToArray(n) {
+function lenToArray(n: number) {
   const oct = integerToOctet(n);
   let i;
   for (i = oct.length; i < 4; i += 1) {
@@ -46,7 +52,7 @@ function lenToArray(n) {
   return oct;
 }
 
-function decodePublicKey(s) {
+export function decodePublicKey(s: string) {
   const split = s.split(" ");
   const prefix = split[0];
   if (prefix !== "ssh-rsa") {
@@ -65,7 +71,8 @@ function decodePublicKey(s) {
   return { type, exponent, key, name: split[2] };
 }
 
-function checkHighestBit(v) {
+// TODO: any
+function checkHighestBit(v: any[]) {
   if (v[0] >> 7 === 1) {
     // add leading zero if first bit is set
     v.unshift(0);
@@ -73,7 +80,8 @@ function checkHighestBit(v) {
   return v;
 }
 
-function jwkToInternal(jwk) {
+// TODO: any
+function jwkToInternal(jwk: any) {
   return {
     type: "ssh-rsa",
     exponent: checkHighestBit(stringToArray(base64urlDecode(jwk.e))),
@@ -82,18 +90,21 @@ function jwkToInternal(jwk) {
   };
 }
 
-function encodePublicKey(jwk, name) {
+// TODO: any
+export function encodePublicKey(jwk: any, name: string) {
   const k = jwkToInternal(jwk);
   k.name = name;
   const keyLenA = lenToArray(k.key.length);
   const exponentLenA = lenToArray(k.exponent.length);
   const typeLenA = lenToArray(k.type.length);
-  const array = [].concat(typeLenA, stringToArray(k.type), exponentLenA, k.exponent, keyLenA, k.key);
+  // TODO: remove ignore
+  // @ts-ignore
+  const array = [].concat((typeLenA as any), stringToArray(k.type), exponentLenA, k.exponent, keyLenA, k.key);
   const encoding = arrayToPem(array);
   return `${k.type} ${encoding} ${k.name}`;
 }
 
-function asnEncodeLen(n) {
+function asnEncodeLen(n: number) {
   let result = [];
   if (n >> 7) {
     result = integerToOctet(n);
@@ -104,7 +115,8 @@ function asnEncodeLen(n) {
   return result;
 }
 
-function encodePrivateKey(jwk) {
+// TODO: any
+export function encodePrivateKey(jwk: any) {
   const order = ["n", "e", "d", "p", "q", "dp", "dq", "qi"];
   const list = order.map(prop => {
     const v = checkHighestBit(stringToArray(base64urlDecode(jwk[prop])));
@@ -118,4 +130,3 @@ function encodePrivateKey(jwk) {
   return arrayToPem(a);
 }
 
-module.exports = { base64urlToArray, decodePublicKey, encodePublicKey, encodePrivateKey };
