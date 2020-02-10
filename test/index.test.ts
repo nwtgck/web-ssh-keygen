@@ -1,8 +1,9 @@
 import * as assert from 'power-assert';
 
-import {arrayToPem, pemToArray} from '../src/pkcs1To8';
-import {arrayToString} from '../src/publicSshToPem';
 import {
+  arrayToPem,
+  pemToArray,
+  arrayToString,
   lenToArray,
   arrayToLen,
   decodePublicKey,
@@ -17,7 +18,7 @@ import {base64urlDecode} from '../src/base64url';
 
 
 describe('mergeUint8Array', () => {
-  it('should merge two Uint8Arrays', async () => {
+  it('should merge two Uint8Arrays', () => {
     assert.deepStrictEqual(1, 1);
   });
 });
@@ -68,25 +69,24 @@ const jwkPrivate = {
 };
 
 describe('all', () => {
-  it('array to PEM', async () => {
+  it('array to PEM', () => {
     const a = [1, 2, 3];
     const p = arrayToPem(a);
     const a2 = pemToArray(p);
     assert.deepEqual(a2, a, "can you count?");
   });
 
-  it('array to String', async () => {
-    // TODO: any
-    const a = "ssh-rsa".split("").map(c => (c as any).charCodeAt());
+  it('array to String', () => {
+    const a = "ssh-rsa".split("").map(c => c.charCodeAt(0));
     assert.equal(arrayToString(pemToArray(arrayToPem(a))), "ssh-rsa");
   });
 
-  it('lenToArray', async () => {
+  it('lenToArray', () => {
     const a = 66051;
     assert.deepEqual(lenToArray(a), [0, 1, 2, 3]);
-  });  
+  });
 
-  it('arrayToLen', async () => {
+  it('arrayToLen', () => {
     const a = [0, 1, 2, 3];
     assert.deepEqual(arrayToLen(a), 66051);
   });
@@ -152,7 +152,7 @@ describe('all', () => {
       assert.deepEqual(asnEncodeLen(t.len), t.asn, t.len.toString());
     });
   });
-  
+
   it("encodePrivateKey", () => {
     encodePrivateKey(jwkPrivate);
     // console.log(encoded);

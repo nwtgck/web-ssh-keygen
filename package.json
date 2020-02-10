@@ -1,6 +1,6 @@
 {
-  "name": "@nwtgck/ssh-keygen",
-  "version": "0.1.0",
+  "name": "web-ssh-keygen",
+  "version": "0.1.1",
   "description": "Generate ssh-keygen keys using the WebCrypto API",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -32,7 +32,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nwtgck/ssh-keygen-npm"
+    "url": "https://github.com/nwtgck/web-ssh-keygen"
   },
   "author": "patrick@roumanoff.com, Ryo Ota <nwtgck@nwtgck.org> (https://github.com/nwtgck)",
   "license": "Apache 2.0"

@@ -1,33 +1,27 @@
-/* eslint no-bitwise: 0 */
-/* global base64urlDecode */
 import {base64urlDecode} from './base64url';
 
-// TODO: any
-function arrayToString(a: any[]) {
+
+export function arrayToString(a: number[]): string {
   return String.fromCharCode.apply(null, a);
 }
 
-export function stringToArray(s: string) {
-  // TODO: any
-  return s.split("").map(c => (c as any).charCodeAt());
+export function stringToArray(s: string): number[] {
+  return s.split("").map(c => c.charCodeAt(0));
 }
 
-export function base64urlToArray(s: string) {
+export function base64urlToArray(s: string): number[] {
   return stringToArray(base64urlDecode(s));
 }
 
-function pemToArray(pem: string) {
+export function pemToArray(pem: string): number[] {
   return stringToArray(window.atob(pem));
 }
 
-// TODO: any
-function arrayToPem(a: any) {
-  // TODO: any
-  return window.btoa(a.map((c: any) => String.fromCharCode(c)).join(""));
+export function arrayToPem(a: readonly number[]): string {
+  return window.btoa(a.map(c => String.fromCharCode(c)).join(""));
 }
 
-// TODO: any
-export function arrayToLen(a: any[]) {
+export function arrayToLen(a: readonly number[]): number {
   let result = 0;
   for (let i = 0; i < a.length; i += 1) {
     result = result * 256 + a[i];
@@ -35,7 +29,7 @@ export function arrayToLen(a: any[]) {
   return result;
 }
 
-export function integerToOctet(n: number) {
+export function integerToOctet(n: number): number[] {
   const result = [];
   for (let i = n; i > 0; i >>= 8) {
     result.push(i & 0xff);
@@ -43,7 +37,7 @@ export function integerToOctet(n: number) {
   return result.reverse();
 }
 
-export function lenToArray(n: number) {
+export function lenToArray(n: number): number[] {
   const oct = integerToOctet(n);
   let i;
   for (i = oct.length; i < 4; i += 1) {
@@ -52,7 +46,7 @@ export function lenToArray(n: number) {
   return oct;
 }
 
-export function decodePublicKey(s: string) {
+export function decodePublicKey(s: string): {type: 'ssh-rsa', exponent: number[], key: number[], name: string} {
   const split = s.split(" ");
   const prefix = split[0];
   if (prefix !== "ssh-rsa") {
@@ -71,8 +65,7 @@ export function decodePublicKey(s: string) {
   return { type, exponent, key, name: split[2] };
 }
 
-// TODO: any
-export function checkHighestBit(v: any[]) {
+export function checkHighestBit(v: number[]) {
   if (v[0] >> 7 === 1) {
     // add leading zero if first bit is set
     v.unshift(0);
@@ -80,31 +73,29 @@ export function checkHighestBit(v: any[]) {
   return v;
 }
 
-// TODO: any
-function jwkToInternal(jwk: any) {
+function jwkToInternal(jwk: JsonWebKey) {
   return {
     type: "ssh-rsa",
-    exponent: checkHighestBit(stringToArray(base64urlDecode(jwk.e))),
+    exponent: checkHighestBit(stringToArray(base64urlDecode(jwk.e!))),
     name: "name",
-    key: checkHighestBit(stringToArray(base64urlDecode(jwk.n))),
+    key: checkHighestBit(stringToArray(base64urlDecode(jwk.n!))),
   };
 }
 
-// TODO: any
-export function encodePublicKey(jwk: any, name: string) {
+export function encodePublicKey(jwk: JsonWebKey, name: string): string {
   const k = jwkToInternal(jwk);
   k.name = name;
   const keyLenA = lenToArray(k.key.length);
   const exponentLenA = lenToArray(k.exponent.length);
   const typeLenA = lenToArray(k.type.length);
-  // TODO: remove ignore
-  // @ts-ignore
-  const array = [].concat((typeLenA as any), stringToArray(k.type), exponentLenA, k.exponent, keyLenA, k.key);
+  const array = [
+    ...typeLenA, ...stringToArray(k.type), ...exponentLenA, ...k.exponent, ...keyLenA, ...k.key,
+  ];
   const encoding = arrayToPem(array);
   return `${k.type} ${encoding} ${k.name}`;
 }
 
-export function asnEncodeLen(n: number) {
+export function asnEncodeLen(n: number): number[] {
   let result = [];
   if (n >> 7) {
     result = integerToOctet(n);
@@ -115,11 +106,10 @@ export function asnEncodeLen(n: number) {
   return result;
 }
 
-// TODO: any
-export function encodePrivateKey(jwk: any) {
-  const order = ["n", "e", "d", "p", "q", "dp", "dq", "qi"];
+export function encodePrivateKey(jwk: JsonWebKey): string {
+  const order = ["n", "e", "d", "p", "q", "dp", "dq", "qi"] as const;
   const list = order.map(prop => {
-    const v = checkHighestBit(stringToArray(base64urlDecode(jwk[prop])));
+    const v = checkHighestBit(stringToArray(base64urlDecode(jwk[prop]!)));
     const len = asnEncodeLen(v.length);
     return [0x02].concat(len, v); // int tag is 0x02
   });
@@ -129,4 +119,3 @@ export function encodePrivateKey(jwk: any) {
   const a = [0x30].concat(len, seq); // seq is 0x30
   return arrayToPem(a);
 }
-
