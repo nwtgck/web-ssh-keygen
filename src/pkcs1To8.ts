@@ -1,6 +1,4 @@
-/* eslint no-bitwise: 0 */
-
-function wrap(text: string, len: number) {
+function wrap(text: string, len?: number): string {
   const length = len || 72;
   let result = "";
   for (let i = 0; i < text.length; i += length) {
@@ -10,28 +8,26 @@ function wrap(text: string, len: number) {
   return result;
 }
 
-// TODO: any
-function pemPrivateKey(key: any) {
+function pemPrivateKey(key: string): string {
   return `-----BEGIN PRIVATE KEY-----\n${wrap(key, 64)}-----END PRIVATE KEY-----`;
 }
 
-function stripPemFormatting(str: string) {
+function stripPemFormatting(str: string): string {
   return str
     .replace(/^-----BEGIN (?:RSA )?(?:PRIVATE|PUBLIC) KEY-----$/m, "")
     .replace(/^-----END (?:RSA )?(?:PRIVATE|PUBLIC) KEY-----$/m, "")
     .replace(/[\n\r]/g, "");
 }
-// TODO: any
-export function arrayToPem(a: any[]) {
+
+export function arrayToPem(a: number[]): string {
   return window.btoa(a.map(c => String.fromCharCode(c)).join(""));
 }
 
-function stringToArray(s: string) {
-  // TODO: any
-  return s.split("").map(c => (c as any).charCodeAt());
+function stringToArray(s: string): number[] {
+  return s.split("").map(c => c.charCodeAt(0));
 }
 
-export function pemToArray(pem: string) {
+export function pemToArray(pem: string): number[] {
   return stringToArray(window.atob(pem));
 }
 
@@ -64,7 +60,7 @@ const prefix = [
   0xa6,
 ];
 
-export function pkcs1To8(privateKeyPkcs1Pem: string) {
+export function pkcs1To8(privateKeyPkcs1Pem: string): string {
   const pem = stripPemFormatting(privateKeyPkcs1Pem);
   const privateKeyPkcs1Array = pemToArray(pem);
   const prefixPkcs8 = prefix.concat(privateKeyPkcs1Array);

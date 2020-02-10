@@ -76,15 +76,14 @@ describe('all', () => {
   });
 
   it('array to String', async () => {
-    // TODO: any
-    const a = "ssh-rsa".split("").map(c => (c as any).charCodeAt());
+    const a = "ssh-rsa".split("").map(c => c.charCodeAt(0));
     assert.equal(arrayToString(pemToArray(arrayToPem(a))), "ssh-rsa");
   });
 
   it('lenToArray', async () => {
     const a = 66051;
     assert.deepEqual(lenToArray(a), [0, 1, 2, 3]);
-  });  
+  });
 
   it('arrayToLen', async () => {
     const a = [0, 1, 2, 3];
@@ -152,7 +151,7 @@ describe('all', () => {
       assert.deepEqual(asnEncodeLen(t.len), t.asn, t.len.toString());
     });
   });
-  
+
   it("encodePrivateKey", () => {
     encodePrivateKey(jwkPrivate);
     // console.log(encoded);

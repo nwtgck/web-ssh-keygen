@@ -1,8 +1,7 @@
-/* global encodePrivateKey, encodePublicKey */
 import {encodePrivateKey, encodePublicKey} from './ssh-util';
 const extractable = true;
 
-function wrap(text: string, len: number): string {
+function wrap(text: string, len?: number): string {
   const length = len || 72;
   let result = "";
   for (let i = 0; i < text.length; i += length) {
@@ -44,10 +43,8 @@ export async function generateKeyPair(
     const privateKeyPromise = window.crypto.subtle
       .exportKey("jwk", key.privateKey)
       .then(encodePrivateKey)
-      // TODO: any
-      .then((wrap as any))
-      // TODO: any
-      .then((rsaPrivateKey as any));
+      .then(wrap)
+      .then(rsaPrivateKey);
 
     const publicKeyPromise = window.crypto.subtle.exportKey("jwk", key.publicKey).then(jwk => encodePublicKey(jwk, name));
     const [privateKey, publicKey] = await Promise.all([privateKeyPromise, publicKeyPromise] as const);
