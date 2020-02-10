@@ -1,6 +1,4 @@
-/* eslint no-bitwise: 0 */
-
-function wrap(text: string, len: number) {
+function wrap(text: string, len?: number): string {
   const length = len || 72;
   let result = "";
   for (let i = 0; i < text.length; i += length) {
@@ -10,11 +8,11 @@ function wrap(text: string, len: number) {
   return result;
 }
 
-function pemPublicKey(key: string) {
+function pemPublicKey(key: string): string {
   return `---- BEGIN RSA PUBLIC KEY ----\n${wrap(key, 65)}---- END RSA PUBLIC KEY ----`;
 }
 
-function integerToOctet(n: number) {
+function integerToOctet(n: number): number[] {
   const result = [];
   for (let i = n; i > 0; i >>= 8) {
     result.push(i & 0xff);
@@ -22,7 +20,7 @@ function integerToOctet(n: number) {
   return result.reverse();
 }
 
-function asnEncodeLen(n: number) {
+function asnEncodeLen(n: number): number[] {
   let result = [];
   if (n >> 7) {
     result = integerToOctet(n);
@@ -33,47 +31,41 @@ function asnEncodeLen(n: number) {
   return result;
 }
 
-// TODO: any
-function checkHighestBit(v: any[]) {
+function checkHighestBit(v: number[]): number[] {
   if (v[0] >> 7 === 1) {
     v.unshift(0); // add leading zero if first bit is set
   }
   return v;
 }
 
-// TODO: any
-function asn1Int(int: any) {
+function asn1Int(int: number[]): number[] {
   const v = checkHighestBit(int);
   const len = asnEncodeLen(v.length);
   return [0x02].concat(len, v); // int tag is 0x02
 }
 
-// TODO: any
-function asn1Seq(seq: any) {
+function asn1Seq(seq: readonly number[]): number[] {
   const len = asnEncodeLen(seq.length);
   return [0x30].concat(len, seq); // seq tag is 0x30
 }
 
-// TODO: any
-function arrayToPem(a: any[]) {
+function arrayToPem(a: number[]): string {
   return window.btoa(a.map(c => String.fromCharCode(c)).join(""));
 }
 
-// TODO: any
-export function arrayToString(a: any) {
+export function arrayToString(a: number[]): string {
   return String.fromCharCode.apply(null, a);
 }
 
-function stringToArray(s: string) {
-  // TODO: any
-  return s.split("").map(c => (c as any).charCodeAt());
+function stringToArray(s: string): number[] {
+  return s.split("").map(c => c.charCodeAt(0));
 }
 
-function pemToArray(pem: string) {
+function pemToArray(pem: string): number[] {
   return stringToArray(window.atob(pem));
 }
 
-function arrayToLen(a: number[]) {
+function arrayToLen(a: number[]): number {
   let result = 0;
   for (let i = 0; i < a.length; i += 1) {
     result = result * 256 + a[i];
@@ -81,7 +73,7 @@ function arrayToLen(a: number[]) {
   return result;
 }
 
-function decodePublicKey(s: string) {
+function decodePublicKey(s: string): {type: 'ssh-rsa', exponent: number[], key: number[], name: string} {
   const split = s.split(" ");
   const prefix = split[0];
   if (prefix !== "ssh-rsa") {
