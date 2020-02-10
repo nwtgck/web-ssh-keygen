@@ -1,7 +1,7 @@
 import {base64urlDecode} from './base64url';
 
 
-function arrayToString(a: number[]): string {
+export function arrayToString(a: number[]): string {
   return String.fromCharCode.apply(null, a);
 }
 
@@ -13,11 +13,11 @@ export function base64urlToArray(s: string): number[] {
   return stringToArray(base64urlDecode(s));
 }
 
-function pemToArray(pem: string): number[] {
+export function pemToArray(pem: string): number[] {
   return stringToArray(window.atob(pem));
 }
 
-function arrayToPem(a: readonly number[]): string {
+export function arrayToPem(a: readonly number[]): string {
   return window.btoa(a.map(c => String.fromCharCode(c)).join(""));
 }
 

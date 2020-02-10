@@ -1,8 +1,9 @@
 import * as assert from 'power-assert';
 
-import {arrayToPem, pemToArray} from '../src/pkcs1To8';
-import {arrayToString} from '../src/publicSshToPem';
 import {
+  arrayToPem,
+  pemToArray,
+  arrayToString,
   lenToArray,
   arrayToLen,
   decodePublicKey,
