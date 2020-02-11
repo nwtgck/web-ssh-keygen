@@ -1,6 +1,6 @@
 {
   "name": "web-ssh-keygen",
-  "version": "0.1.2",
+  "version": "0.1.3-SNAPSHOT",
   "description": "Generate ssh-keygen keys using the WebCrypto API",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
