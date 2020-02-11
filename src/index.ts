@@ -1,15 +1,7 @@
 import {encodePrivateKey, encodePublicKey} from './ssh-util';
-const extractable = true;
+import {wrapString} from './util';
 
-function wrap(text: string, len?: number): string {
-  const length = len || 72;
-  let result = "";
-  for (let i = 0; i < text.length; i += length) {
-    result += text.slice(i, i + length);
-    result += "\n";
-  }
-  return result;
-}
+const extractable = true;
 
 function rsaPrivateKey(key: string): string {
   return `-----BEGIN RSA PRIVATE KEY-----\n${key}-----END RSA PRIVATE KEY-----`;
@@ -43,7 +35,7 @@ export async function generateKeyPair(
     const privateKeyPromise = window.crypto.subtle
       .exportKey("jwk", key.privateKey)
       .then(encodePrivateKey)
-      .then(wrap)
+      .then(wrapString)
       .then(rsaPrivateKey);
 
     const publicKeyPromise = window.crypto.subtle.exportKey("jwk", key.publicKey).then(jwk => encodePublicKey(jwk, name));

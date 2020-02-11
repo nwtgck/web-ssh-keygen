@@ -65,15 +65,15 @@ export function decodePublicKey(s: string): {type: 'ssh-rsa', exponent: number[]
   return { type, exponent, key, name: split[2] };
 }
 
-export function checkHighestBit(v: number[]) {
+export function checkHighestBit(v: readonly number[]) {
   if (v[0] >> 7 === 1) {
     // add leading zero if first bit is set
-    v.unshift(0);
+    return [0, ...v];
   }
   return v;
 }
 
-function jwkToInternal(jwk: JsonWebKey) {
+function jwkToInternal(jwk: Readonly<JsonWebKey>) {
   return {
     type: "ssh-rsa",
     exponent: checkHighestBit(stringToArray(base64urlDecode(jwk.e!))),
@@ -82,7 +82,7 @@ function jwkToInternal(jwk: JsonWebKey) {
   };
 }
 
-export function encodePublicKey(jwk: JsonWebKey, name: string): string {
+export function encodePublicKey(jwk: Readonly<JsonWebKey>, name: string): string {
   const k = jwkToInternal(jwk);
   k.name = name;
   const keyLenA = lenToArray(k.key.length);
@@ -106,7 +106,7 @@ export function asnEncodeLen(n: number): number[] {
   return result;
 }
 
-export function encodePrivateKey(jwk: JsonWebKey): string {
+export function encodePrivateKey(jwk: Readonly<JsonWebKey>): string {
   const order = ["n", "e", "d", "p", "q", "dp", "dq", "qi"] as const;
   const list = order.map(prop => {
     const v = checkHighestBit(stringToArray(base64urlDecode(jwk[prop]!)));
