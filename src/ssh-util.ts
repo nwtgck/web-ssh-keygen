@@ -65,10 +65,10 @@ export function decodePublicKey(s: string): {type: 'ssh-rsa', exponent: number[]
   return { type, exponent, key, name: split[2] };
 }
 
-export function checkHighestBit(v: number[]) {
+export function checkHighestBit(v: readonly number[]) {
   if (v[0] >> 7 === 1) {
     // add leading zero if first bit is set
-    v.unshift(0);
+    return [0, ...v];
   }
   return v;
 }
