@@ -1,15 +1,8 @@
-function wrap(text: string, len?: number): string {
-  const length = len || 72;
-  let result = "";
-  for (let i = 0; i < text.length; i += length) {
-    result += text.slice(i, i + length);
-    result += "\n";
-  }
-  return result;
-}
+import {wrapString} from "./util";
+import {pemToArray, arrayToPem} from "./ssh-util";
 
 function pemPrivateKey(key: string): string {
-  return `-----BEGIN PRIVATE KEY-----\n${wrap(key, 64)}-----END PRIVATE KEY-----`;
+  return `-----BEGIN PRIVATE KEY-----\n${wrapString(key, 64)}-----END PRIVATE KEY-----`;
 }
 
 function stripPemFormatting(str: string): string {
@@ -17,18 +10,6 @@ function stripPemFormatting(str: string): string {
     .replace(/^-----BEGIN (?:RSA )?(?:PRIVATE|PUBLIC) KEY-----$/m, "")
     .replace(/^-----END (?:RSA )?(?:PRIVATE|PUBLIC) KEY-----$/m, "")
     .replace(/[\n\r]/g, "");
-}
-
-export function arrayToPem(a: number[]): string {
-  return window.btoa(a.map(c => String.fromCharCode(c)).join(""));
-}
-
-function stringToArray(s: string): number[] {
-  return s.split("").map(c => c.charCodeAt(0));
-}
-
-export function pemToArray(pem: string): number[] {
-  return stringToArray(window.atob(pem));
 }
 
 const prefix = [

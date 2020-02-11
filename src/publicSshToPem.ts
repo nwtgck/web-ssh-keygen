@@ -1,41 +1,15 @@
-function wrap(text: string, len?: number): string {
-  const length = len || 72;
-  let result = "";
-  for (let i = 0; i < text.length; i += length) {
-    result += text.slice(i, i + length);
-    result += "\n";
-  }
-  return result;
-}
+import {wrapString} from "./util";
+import {
+  asnEncodeLen,
+  checkHighestBit,
+  arrayToPem,
+  arrayToString,
+  pemToArray,
+  arrayToLen,
+} from "./ssh-util";
 
 function pemPublicKey(key: string): string {
-  return `---- BEGIN RSA PUBLIC KEY ----\n${wrap(key, 65)}---- END RSA PUBLIC KEY ----`;
-}
-
-function integerToOctet(n: number): number[] {
-  const result = [];
-  for (let i = n; i > 0; i >>= 8) {
-    result.push(i & 0xff);
-  }
-  return result.reverse();
-}
-
-function asnEncodeLen(n: number): number[] {
-  let result = [];
-  if (n >> 7) {
-    result = integerToOctet(n);
-    result.unshift(0x80 + result.length);
-  } else {
-    result.push(n);
-  }
-  return result;
-}
-
-function checkHighestBit(v: number[]): number[] {
-  if (v[0] >> 7 === 1) {
-    v.unshift(0); // add leading zero if first bit is set
-  }
-  return v;
+  return `---- BEGIN RSA PUBLIC KEY ----\n${wrapString(key, 65)}---- END RSA PUBLIC KEY ----`;
 }
 
 function asn1Int(int: number[]): number[] {
@@ -47,30 +21,6 @@ function asn1Int(int: number[]): number[] {
 function asn1Seq(seq: readonly number[]): number[] {
   const len = asnEncodeLen(seq.length);
   return [0x30].concat(len, seq); // seq tag is 0x30
-}
-
-function arrayToPem(a: number[]): string {
-  return window.btoa(a.map(c => String.fromCharCode(c)).join(""));
-}
-
-export function arrayToString(a: number[]): string {
-  return String.fromCharCode.apply(null, a);
-}
-
-function stringToArray(s: string): number[] {
-  return s.split("").map(c => c.charCodeAt(0));
-}
-
-function pemToArray(pem: string): number[] {
-  return stringToArray(window.atob(pem));
-}
-
-function arrayToLen(a: number[]): number {
-  let result = 0;
-  for (let i = 0; i < a.length; i += 1) {
-    result = result * 256 + a[i];
-  }
-  return result;
 }
 
 function decodePublicKey(s: string): {type: 'ssh-rsa', exponent: number[], key: number[], name: string} {
