@@ -12,7 +12,7 @@ function pemPublicKey(key: string): string {
   return `---- BEGIN RSA PUBLIC KEY ----\n${wrapString(key, 65)}---- END RSA PUBLIC KEY ----`;
 }
 
-function asn1Int(int: number[]): number[] {
+function asn1Int(int: readonly number[]): number[] {
   const v = checkHighestBit(int);
   const len = asnEncodeLen(v.length);
   return [0x02].concat(len, v); // int tag is 0x02
