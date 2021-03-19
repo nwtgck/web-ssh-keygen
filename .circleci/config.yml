@@ -9,6 +9,11 @@ ANCHORS:
 
 version: 2
 jobs:
+  node_14:
+    docker:
+      - image: circleci/node:14-browsers
+    <<: *node_steps
+
   node_12:
     docker:
       - image: circleci/node:12-browsers
@@ -17,11 +22,6 @@ jobs:
   node_10:
     docker:
       - image: circleci/node:10-browsers
-    <<: *node_steps
-
-  node_8:
-    docker:
-      - image: circleci/node:8-browsers
     <<: *node_steps
 
   # (from: https://circleci.com/blog/publishing-npm-packages-using-circleci-2-0/)
@@ -40,6 +40,10 @@ workflows:
   version: 2
   node_tests:
     jobs:
+      - node_14:
+          filters:
+            tags:
+              only: /.*/
       - node_12:
           filters:
             tags:
@@ -48,15 +52,11 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - node_8:
-          filters:
-            tags:
-              only: /.*/
       - npm_publish:
           requires:
+            - node_14
             - node_12
             - node_10
-            - node_8
           filters:
             tags:
               only: /.*/
