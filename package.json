@@ -17,7 +17,7 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "@types/jasmine": "^3.5.3",
+    "@types/jasmine": "^4.0.0",
     "@types/power-assert": "^1.5.3",
     "jasmine-core": "^4.0.1",
     "karma": "^6.2.0",
