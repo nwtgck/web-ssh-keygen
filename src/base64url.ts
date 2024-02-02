@@ -1,7 +1,7 @@
 // adapted from https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-08#appendix-C
 
 export function base64urlEncode(arg: string): string {
-  const step1 = window.btoa(arg); // Regular base64 encoder
+  const step1 = btoa(arg); // Regular base64 encoder
   const step2 = step1.split("=")[0]; // Remove any trailing '='s
   const step3 = step2.replace(/\+/g, "-"); // 62nd char of encoding
   const step4 = step3.replace(/\//g, "_"); // 63rd char of encoding
@@ -24,5 +24,5 @@ export function base64urlDecode(s: string): string {
     default:
       throw new Error("Illegal base64url string!");
   }
-  return window.atob(step3); // Regular base64 decoder
+  return atob(step3); // Regular base64 decoder
 }

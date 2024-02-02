@@ -1,6 +1,19 @@
 import {encodePrivateKey, encodePublicKey} from './ssh-util';
 import {wrapString} from './util';
 
+let _crypto: Crypto
+
+const isNode = Object.prototype.toString.call(typeof process !== 'undefined' ? process : 0) === '[object process]'
+
+if(isNode){
+  const mainVersion = +process.versions.node.split('.')[0]
+  if(mainVersion<16) throw new Error('Your Node.js version not support "webcrypto", lowest Node.js v16')
+  
+  _crypto = require('crypto').webcrypto
+}else{
+  _crypto = crypto
+}
+
 const extractable = true;
 
 function rsaPrivateKey(key: string): string {
@@ -14,13 +27,13 @@ export function arrayBufferToBase64(buffer: ArrayBuffer): string {
   for (let i = 0; i < len; i += 1) {
     binary += String.fromCharCode(bytes[i]);
   }
-  return window.btoa(binary);
+  return btoa(binary);
 }
 
 export async function generateKeyPair(
   {alg, size, name, hash}:
   {alg: "RSASSA-PKCS1-v1_5", size: 1024 | 2048 | 4096, hash: "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512", name: string}): Promise<{privateKey: string, publicKey: string}> {
-  const key = await window.crypto.subtle
+  const key = await _crypto.subtle
     .generateKey(
       {
         name: alg,
@@ -32,13 +45,13 @@ export async function generateKeyPair(
       ["sign", "verify"]
     );
 
-    const privateKeyPromise = window.crypto.subtle
+    const privateKeyPromise = _crypto.subtle
       .exportKey("jwk", key.privateKey)
       .then(encodePrivateKey)
       .then(wrapString)
       .then(rsaPrivateKey);
 
-    const publicKeyPromise = window.crypto.subtle.exportKey("jwk", key.publicKey).then(jwk => encodePublicKey(jwk, name));
+    const publicKeyPromise = _crypto.subtle.exportKey("jwk", key.publicKey).then(jwk => encodePublicKey(jwk, name));
     const [privateKey, publicKey] = await Promise.all([privateKeyPromise, publicKeyPromise] as const);
     return {
       privateKey,
