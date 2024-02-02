@@ -14,11 +14,11 @@ export function base64urlToArray(s: string): number[] {
 }
 
 export function pemToArray(pem: string): number[] {
-  return stringToArray(window.atob(pem));
+  return stringToArray(atob(pem));
 }
 
 export function arrayToPem(a: readonly number[]): string {
-  return window.btoa(a.map(c => String.fromCharCode(c)).join(""));
+  return btoa(a.map(c => String.fromCharCode(c)).join(""));
 }
 
 export function arrayToLen(a: readonly number[]): number {
